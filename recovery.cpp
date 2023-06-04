@@ -734,7 +734,7 @@ static void log_failure_code(ErrorCode code, const std::string& update_package) 
 }
 
 std::string getProcessedVersion() {
-    std::string full_version = android::base::GetProperty("ro.crdroid.build.version", "(unknown)");
+    std::string full_version = android::base::GetProperty("ro.matrixx.build.version", "(unknown)");
     std::vector<std::string> parts;
     std::stringstream ss(full_version);
     std::string item;
