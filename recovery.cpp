@@ -890,7 +890,7 @@ Device::BuiltinAction start_recovery(Device* device, const std::vector<std::stri
   std::string ver = android::base::GetProperty("ro.modversion", "");
 
   std::vector<std::string> title_lines = {
-    "Version " + android::base::GetProperty("ro.crdroid.build.version", "(unknown)"),
+    "Version " + android::base::GetProperty("ro.modversion", "(unknown)"),
   };
   title_lines.push_back("Product name - " + android::base::GetProperty("ro.product.device", ""));
   if (android::base::GetBoolProperty("ro.build.ab_update", false)) {
