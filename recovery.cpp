@@ -744,7 +744,7 @@ std::string getProcessedVersion() {
     }
 
     if (parts.size() >= 5) {
-        return parts[0] + "-" + parts[1] + "-" + parts[2] + "-" + parts[4] + "-" + parts[5];
+        return parts[0] + "-" + parts[1] + "-" + parts[2] + "-" + parts[4];
     } else {
         return "(unknown)";
     }
