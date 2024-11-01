@@ -873,6 +873,8 @@ void ScreenRecoveryUI::draw_battery_capacity_locked() {
   int y = margin_height_ + gr_get_height(lineage_logo_.get());
   int icon_x, icon_y, icon_h, icon_w;
 
+  if (is_battery_less) return;
+
   // Battery status
   std::string batt_capacity = std::to_string(batt_capacity_) + '%';
 
@@ -1203,8 +1205,10 @@ bool ScreenRecoveryUI::Init(const std::string& locale) {
 
   LoadAnimation();
 
-  // Keep the battery capacity updated.
-  batt_monitor_thread_ = std::thread(&ScreenRecoveryUI::BattMonitorThreadLoop, this);
+  is_battery_less = android::base::GetBoolProperty("ro.recovery.batteryless", false);
+  if (!is_battery_less)
+    // Keep the battery capacity updated.
+    batt_monitor_thread_ = std::thread(&ScreenRecoveryUI::BattMonitorThreadLoop, this);
 
   // Keep the progress bar updated, even when the process is otherwise busy.
   progress_thread_ = std::thread(&ScreenRecoveryUI::ProgressThreadLoop, this);
@@ -1392,9 +1396,11 @@ void ScreenRecoveryUI::ShowFile(FILE* fp) {
           continue;
         }
         if (evt.key() == KEY_POWER || evt.key() == KEY_ENTER || evt.key() == KEY_BACKSPACE ||
-            evt.key() == KEY_BACK || evt.key() == KEY_HOME || evt.key() == KEY_HOMEPAGE) {
+            evt.key() == KEY_BACK || evt.key() == KEY_HOMEPAGE ||
+            evt.key() == KEY_ESC || evt.key() == KEY_LEFTMETA || evt.key() == KEY_RIGHTMETA) {
           return;
-        } else if (evt.key() == KEY_UP || evt.key() == KEY_VOLUMEUP || evt.key() == KEY_SCROLLUP) {
+        } else if (evt.key() == KEY_UP || evt.key() == KEY_VOLUMEUP || evt.key() == KEY_SCROLLUP ||
+                   evt.key() == KEY_PAGEUP) {
           if (offsets.size() <= 1) {
             show_prompt = true;
           } else {
@@ -1618,6 +1624,12 @@ size_t ScreenRecoveryUI::ShowMenu(std::unique_ptr<Menu>&& menu, bool menu_only,
           break;
         case Device::kHighlightDown:
           selected = SelectMenu(++selected);
+          break;
+        case Device::kHighlightFirst:
+          selected = SelectMenu(0);
+          break;
+        case Device::kHighlightLast:
+          selected = SelectMenu(menu_->ItemsCount() - 1);
           break;
         case Device::kScrollUp:
           selected = ScrollMenu(-1);
